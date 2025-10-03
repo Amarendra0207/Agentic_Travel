@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 8501
 
 # Start both backend and frontend
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port 8000 --reload & streamlit run streamlit/app.py --server.port=8501 --server.address=0.0.0.0"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port 8000 --reload & streamlit run streamlit_app.py --server.port=8501 --server.address=0.0.0.0"]
