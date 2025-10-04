@@ -4,21 +4,38 @@ This module provides a CarRentalService class for searching car rental and trans
 offers using the Amadeus API.
 """
 
+from dotenv import load_dotenv
+import os
 import requests
-import streamlit as st
+
+load_dotenv()  # Load environment variables from .env file
 
 
 class CarRentalService:  # pylint: disable=too-few-public-methods
     """Car rental and transfer service using Amadeus API."""
 
     def __init__(self):
-        # Get Amadeus configuration from Streamlit secrets
-        self.amadeus_api_key = st.secrets["amadeus"]["api_key"]
-        self.amadeus_api_secret = st.secrets["amadeus"]["api_secret"]
-        self.base_url = st.secrets["amadeus"]["base_url"] + "/shopping/transfer-offers"
-        self.token_url = st.secrets["amadeus"]["token_url"]
+        # Get Amadeus configuration from environment variables
+        self.amadeus_api_key = os.getenv("AMADEUS_API_KEY")
+        self.amadeus_api_secret = os.getenv("AMADEUS_API_SECRET")
+        base_url_from_env = os.getenv("AMADEUS_BASE_URL")
+        self.token_url = os.getenv("AMADEUS_TOKEN_URL")
+
+        if not all(
+            [
+                self.amadeus_api_key,
+                self.amadeus_api_secret,
+                base_url_from_env,
+                self.token_url,
+            ]
+        ):
+            raise ValueError(
+                "Amadeus API credentials are not fully configured in the environment."
+            )
+
+        self.base_url = base_url_from_env + "/shopping/transfer-offers"
         self.access_token = self._get_access_token()
-        print(f"Access Token: '{self.access_token}'")
+        print("Access Token for Amadeus:", self.access_token)
 
     def _get_access_token(self):
         data = {

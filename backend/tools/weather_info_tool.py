@@ -23,8 +23,8 @@ class WeatherInfoTool:  # pylint: disable=too-few-public-methods
         weather_tool_list (List): List of available weather tools
     """
 
-    def __init__(self):
-        self.weather_service = WeatherForecastTool()
+    def __init__(self, api_key: str, base_url: str):
+        self.weather_service = WeatherForecastTool(api_key=api_key, base_url=base_url)
         self.weather_tool_list = self._setup_tools()
 
     def _setup_tools(self) -> List:

@@ -10,7 +10,6 @@ from typing import List
 import requests
 from airportsdata import load as load_airports
 from langchain.tools import tool
-import streamlit as st
 
 
 class DistanceCalculatorTool:  # pylint: disable=too-few-public-methods
@@ -25,8 +24,10 @@ class DistanceCalculatorTool:  # pylint: disable=too-few-public-methods
         distance_tool_list (List): List of available distance calculation tools
     """
 
-    def __init__(self):
-        self.openroute_api_key = st.secrets["map"]["api_key"]
+    def __init__(self, openroute_api_key: str):
+        if not openroute_api_key:
+            raise ValueError("OpenRouteService API key not provided.")
+        self.openroute_api_key = openroute_api_key
         self.airports_data = load_airports("IATA")
         self.distance_tool_list = self._setup_tools()
 

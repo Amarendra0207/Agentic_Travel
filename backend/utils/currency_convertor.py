@@ -18,7 +18,9 @@ class CurrencyConverter:  # pylint: disable=too-few-public-methods
         url = f"{self.base_url}/{from_currency}"
         response = requests.get(url, timeout=10)
         if response.status_code != 200:
-            raise requests.RequestException(f"API call failed: {response.json()}")
+            raise requests.RequestException(
+                f"API call failed: {response.status_code} {response.text}"
+            )
         rates = response.json()["conversion_rates"]
         if to_currency not in rates:
             raise ValueError(f"{to_currency} not found in exchange rates.")

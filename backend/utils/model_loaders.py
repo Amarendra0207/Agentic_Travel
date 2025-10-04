@@ -1,18 +1,20 @@
 """Model loaders utility module.
 
 This module provides classes for loading and configuring LLM models from different
-providers (Groq, OpenAI) based on configuration settings.
+provider (Groq) based on configuration settings.
 """
 
 from typing import Literal, Optional, Any
 
 from pydantic import BaseModel, Field, model_validator
 from langchain_groq import ChatGroq
-from langchain_openai import ChatOpenAI
-import streamlit as st
+from dotenv import load_dotenv
+import os
 
 from utils.config_loaders import load_config
 
+
+load_dotenv()  # Load environment variables from .env file
 
 class ConfigLoader:  # pylint: disable=too-few-public-methods
     """Configuration loader for model settings."""
@@ -28,7 +30,7 @@ class ConfigLoader:  # pylint: disable=too-few-public-methods
 class ModelLoader(BaseModel):
     """Model loader for LLM providers with configuration support."""
 
-    model_provider: Literal["groq", "openai"] = "groq"
+    model_provider: Literal["groq"] = "groq"
     config: Optional[ConfigLoader] = Field(default=None, exclude=True)
 
     @model_validator(mode='after')
@@ -55,12 +57,8 @@ class ModelLoader(BaseModel):
 
         if self.model_provider == "groq":
             print("Loading LLM from Groq..............")
-            groq_api_key = st.secrets["llm"]["groq"]
+            groq_api_key = os.getenv("GROQ_API_KEY")
             model_name: str = str(self.config["llm"]["groq"]["model_name"])
             llm = ChatGroq(model=model_name, api_key=groq_api_key)
-        elif self.model_provider == "openai":
-            print("Loading LLM from OpenAI..............")
-            openai_api_key = st.secrets["llm"]["openai"]
-            llm = ChatOpenAI(model="gpt-4o-mini", api_key=openai_api_key)
 
         return llm

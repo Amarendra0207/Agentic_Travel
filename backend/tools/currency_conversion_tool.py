@@ -7,7 +7,6 @@ for converting currencies using external currency conversion APIs.
 from typing import List
 
 from langchain.tools import tool
-import streamlit as st
 
 from utils.currency_convertor import CurrencyConverter
 
@@ -24,9 +23,8 @@ class CurrencyConverterTool:  # pylint: disable=too-few-public-methods
         currency_converter_tool_list (List): List of available currency conversion tools
     """
 
-    def __init__(self):
-        self.api_key = st.secrets["exchange_rate"]["api_key"]
-        self.currency_service = CurrencyConverter(self.api_key)
+    def __init__(self, api_key: str):
+        self.currency_service = CurrencyConverter(api_key)
         self.currency_converter_tool_list = self._setup_tools()
 
     def _setup_tools(self) -> List:

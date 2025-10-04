@@ -8,7 +8,6 @@ import os
 
 from langchain.tools import tool
 from langchain_community.utilities.alpha_vantage import AlphaVantageAPIWrapper
-import streamlit as st
 
 
 @tool
@@ -53,9 +52,7 @@ def currency_converter(from_curr: str, to_curr: str, value: float) -> float:
     Returns:
         float: Converted currency value
     """
-    os.environ["ALPHAVANTAGE_API_KEY"] = st.secrets["exchange_rate"][
-        "alpha_vantage_key"
-    ]
+    os.environ["ALPHAVANTAGE_API_KEY"] = os.getenv("ALPHAVANTAGE_API_KEY")
     alpha_vantage = AlphaVantageAPIWrapper()
     # Note: Using private method as it's the available API in langchain_community
     # pylint: disable=protected-access

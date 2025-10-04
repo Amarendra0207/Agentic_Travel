@@ -24,8 +24,8 @@ class PlaceSearchTool:  # pylint: disable=too-few-public-methods
         place_search_tool_list (List): List of available place search tools
     """
 
-    def __init__(self):
-        self.tavily_search = TavilyPlaceSearchTool()
+    def __init__(self, tavily_api_key: str):
+        self.tavily_search = TavilyPlaceSearchTool(tavily_api_key=tavily_api_key)
         self.place_search_tool_list = self._setup_tools()
 
     def _setup_tools(self) -> List:

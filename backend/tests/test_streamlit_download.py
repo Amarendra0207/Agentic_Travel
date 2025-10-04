@@ -10,7 +10,7 @@ import datetime
 import os
 from typing import Any, Dict
 from unittest.mock import patch, MagicMock
-
+import streamlit as st
 import requests
 
 from test_utils import get_base_url
@@ -23,7 +23,6 @@ def is_pytest_running() -> bool:
 
 def run_streamlit_app() -> None:
     """Run the Streamlit app (only when not in pytest)."""
-    import streamlit as st  # pylint: disable=import-outside-toplevel
 
     # Simple test for Word document download
     st.title("🧪 Word Download Test")

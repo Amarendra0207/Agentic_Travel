@@ -11,6 +11,7 @@ import os
 from typing import Optional, Dict, Any
 
 from airportsdata import load
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
@@ -19,6 +20,8 @@ from agent.agentic_workflow import GraphBuilder
 from utils.airport_distance_calculator import AirportDistanceCalculator
 from utils.car_rental_service import CarRentalService
 from utils.word_document_exporter import WordDocumentExporter
+
+load_dotenv()  # Load environment variables from .env file
 
 app = FastAPI()
 
@@ -56,14 +59,27 @@ async def query_travel_agent(query: QueryRequest):
         }
     """
     try:
-        print(query)
-
         # Get budget preference from request
         budget_preference = getattr(query, "budget_preference", "budget_friendly")
         print(f"Budget preference: {budget_preference}")
 
-        # Initialize graph with budget preference
-        graph = GraphBuilder(model_provider="groq", budget_preference=budget_preference)
+        # Load API keys from environment variables
+        tavily_api_key = os.getenv("TAVILY_API_KEY")
+        exchange_rate_api_key = os.getenv("EXCHANGE_RATE_API_KEY")
+        weather_api_key = os.getenv("WEATHER_API_KEY")
+        weather_base_url = os.getenv("WEATHER_BASE_URL")
+        openroute_api_key = os.getenv("OPENROUTE_API_KEY")
+
+        # Initialize graph with budget preference and API keys
+        graph = GraphBuilder(
+            tavily_api_key=tavily_api_key,
+            exchange_rate_api_key=exchange_rate_api_key,
+            weather_api_key=weather_api_key,
+            weather_base_url=weather_base_url,
+            openroute_api_key=openroute_api_key,
+            model_provider="groq",
+            budget_preference=budget_preference,
+        )
         react_app = graph()
 
         png_graph = react_app.get_graph().draw_mermaid_png()
@@ -187,7 +203,9 @@ async def query_travel_agent(query: QueryRequest):
         # --- Distance Information Integration ---
         distance_section = "\n\n"
         try:
-            distance_calculator = AirportDistanceCalculator()
+            distance_calculator = AirportDistanceCalculator(
+                api_key=openroute_api_key
+            )
 
             # If airport codes are provided, calculate distances
             if query.startLocationCode or query.endLocationCode:

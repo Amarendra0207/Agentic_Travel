@@ -14,34 +14,12 @@ from airportsdata import load as load_airports
 class AirportDistanceCalculator:
     """Utility class for calculating distances from airports to various locations"""
 
-    def __init__(self, api_key: Optional[str] = None):
-        """Initialize the calculator with optional API key.
-
-        Args:
-            api_key: Optional OpenRouteService API key. If not provided,
-                    will attempt to get from Streamlit secrets or use None.
-        """
-        if api_key:
-            self.openroute_api_key = api_key
-        else:
-            self.openroute_api_key = self._get_api_key()
+    def __init__(self, api_key: str):
+        """Initialize the calculator with an OpenRouteService API key."""
+        if not api_key:
+            raise ValueError("OpenRouteService API key not provided.")
+        self.openroute_api_key = api_key
         self.airports_data = load_airports("IATA")
-
-    def _get_api_key(self) -> Optional[str]:
-        """Get API key from Streamlit secrets with fallback."""
-        try:
-            import streamlit as st  # pylint: disable=import-outside-toplevel
-
-            return str(st.secrets["map"]["api_key"])
-        except ImportError:
-            # Streamlit not available
-            return None
-        except (KeyError, AttributeError):
-            # Secrets structure issues
-            return None
-        except Exception:  # pylint: disable=broad-except
-            # Catch StreamlitSecretNotFoundError and other Streamlit exceptions
-            return None
 
     def get_airport_coordinates(
         self, airport_code: str

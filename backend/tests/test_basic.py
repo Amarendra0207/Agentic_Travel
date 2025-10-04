@@ -8,6 +8,10 @@ import os
 import sys
 
 import requests
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Add parent directory to path for local imports
 # pylint: disable=wrong-import-position
@@ -17,23 +21,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.airport_distance_calculator import AirportDistanceCalculator
 
 
-def get_map_key():
-    """Get MAP_KEY with fallback for testing environments."""
-    try:
-        import streamlit as st  # pylint: disable=import-outside-toplevel
-
-        return str(st.secrets["map"]["api_key"])
-    except ImportError:
-        # Streamlit not available
-        return None
-    except (KeyError, AttributeError):
-        # Secrets structure issues
-        return None
-    except Exception:  # pylint: disable=broad-except
-        # Catch StreamlitSecretNotFoundError and other Streamlit exceptions
-        return None
-
-
 def test_basic_functionality():
     """Test basic functionality without API calls"""
 
@@ -41,7 +28,7 @@ def test_basic_functionality():
     print("=" * 50)
 
     # Get API key with fallback
-    map_key = get_map_key()
+    map_key = os.getenv("OPENROUTE_API_KEY")
 
     # Initialize calculator
     calc = AirportDistanceCalculator(api_key=map_key)

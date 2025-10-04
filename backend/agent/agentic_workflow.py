@@ -25,7 +25,7 @@ class GraphBuilderConfig:
     """Configuration class for GraphBuilder.
 
     Attributes:
-        model_provider: The LLM provider to use ("groq" or "openai")
+        model_provider: The LLM provider to use ("groq")
         budget_preference: Travel budget preference ("cheapest", "budget_friendly", "luxurious")
     """
 
@@ -44,12 +44,22 @@ class GraphBuilder:  # pylint: disable=too-many-instance-attributes
 
     def __init__(
         self,
+        tavily_api_key: str,
+        exchange_rate_api_key: str,
+        weather_api_key: str,
+        weather_base_url: str,
+        openroute_api_key: str,
         model_provider: str = "groq",
         budget_preference: str = "budget_friendly",
     ):
         self.config = GraphBuilderConfig(
             model_provider=model_provider, budget_preference=budget_preference
         )
+        self.tavily_api_key = tavily_api_key
+        self.exchange_rate_api_key = exchange_rate_api_key
+        self.weather_api_key = weather_api_key
+        self.weather_base_url = weather_base_url
+        self.openroute_api_key = openroute_api_key
 
         self._model_loader: Optional[ModelLoader] = None
         self._llm = None
@@ -91,11 +101,17 @@ class GraphBuilder:  # pylint: disable=too-many-instance-attributes
 
     # ---- Tools initialization ----
     def _init_tool_instances(self) -> None:
-        self.weather_tools = WeatherInfoTool()
-        self.place_search_tools = PlaceSearchTool()
+        self.weather_tools = WeatherInfoTool(
+            api_key=self.weather_api_key, base_url=self.weather_base_url
+        )
+        self.place_search_tools = PlaceSearchTool(tavily_api_key=self.tavily_api_key)
         self.calculator_tools = CalculatorTool()
-        self.currency_converter_tools = CurrencyConverterTool()
-        self.distance_calculator_tools = DistanceCalculatorTool()
+        self.currency_converter_tools = CurrencyConverterTool(
+            api_key=self.exchange_rate_api_key
+        )
+        self.distance_calculator_tools = DistanceCalculatorTool(
+            openroute_api_key=self.openroute_api_key
+        )
 
     def _collect_tools(self) -> List:
         """

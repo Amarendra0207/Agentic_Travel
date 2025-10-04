@@ -5,15 +5,14 @@ and forecast information using the OpenWeatherMap API.
 """
 
 import requests
-import streamlit as st
 
 
 class WeatherForecastTool:
     """Weather forecast tool using OpenWeatherMap API."""
 
-    def __init__(self):
-        self.api_key = st.secrets["weather"]["api_key"]
-        self.base_url = st.secrets["weather"]["base_url"]
+    def __init__(self, api_key: str, base_url: str):
+        self.api_key = api_key
+        self.base_url = base_url
 
     def get_current_weather(self, place: str):
         """Get current weather of a place"""
